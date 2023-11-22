@@ -190,7 +190,7 @@ const explore = [
     avatar: require("./userCard/user3.jpeg"),
     background: require("./background.jpeg"),
     joinTime: new Date(),
-    name: "Elijah Katz",
+    name: "Christina Swift",
     userTag: "@elijah23419",
     bio: "I love junk food! Let's not keep a healthy diet but oily food.",
 
@@ -204,7 +204,7 @@ const explore = [
     avatar: require("./userCard/user4.jpeg"),
     background: require("./background.jpeg"),
     joinTime: new Date(),
-    name: "Elijah Katz",
+    name: "Richardson Leeman",
     userTag: "@elijah23419",
     bio: "This person is lazy. He did not leave any words in bio.",
 
