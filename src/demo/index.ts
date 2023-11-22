@@ -104,7 +104,7 @@ const analytics = [
 const history = [
   {
     date: new Date(Date.now()),
-    intake: { calories: 122, fat: 5, protein: 1 },
+    intake: { calories: 135, carbs: 35 },
     source: 1,
     itemName: "Coca-Cola",
   },
