@@ -17,7 +17,7 @@ const createStyles = () => {
       justifyContent: "center",
       alignContent: "center",
 
-      paddingHorizontal: "5%",
+      paddingHorizontal: "15%",
     },
 
     // main content
@@ -61,6 +61,7 @@ const createStyles = () => {
     tab: {
       width: "100%",
       alignContent: "center",
+      alignItems: "center",
     },
     tabRow: {
       width: "100%",

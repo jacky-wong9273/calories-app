@@ -22,4 +22,19 @@ const getSource = (i: number) => {
   }
 };
 
-export { proper, getUnit, getSource };
+// objectives
+const objectives = [
+  { label: "Keep Fit", value: "Keep Fit" },
+  { label: "Semi-Bulk", value: "Semi-Bulk" },
+  { label: "Bulk", value: "Bulk" },
+  { label: "On Diet", value: "On Diet" },
+];
+
+// genders
+const genders = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+  { label: "I prefer not to say", value: "Others" },
+];
+
+export { proper, getUnit, getSource, objectives, genders };
