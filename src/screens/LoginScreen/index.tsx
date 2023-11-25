@@ -24,11 +24,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   // handle sign in
   const signIn = () => {
+    // for demo
+    setTimeout(() => {
+      navigation.navigate("HomeTab");
+    }, 2120);
+
     // todo @chris
     // sign in with existing account
     // if password is incorrect, setIsPasswordIncorrect = true
     // then navigate to hometab
-    navigation.navigate("HomeTab");
+    // navigation.navigate("HomeTab");
   };
 
   return (
