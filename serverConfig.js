@@ -1,3 +1,5 @@
 // serverConfig.js
-
-export const serverIP =  "http://192.168.50.240:5000";
+module.exports = {
+    "serverIP": "http://192.168.50.240:5000",
+    "serverMode": "offline" //online OR offline
+}

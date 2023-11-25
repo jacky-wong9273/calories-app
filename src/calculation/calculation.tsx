@@ -13,13 +13,18 @@ export interface profile{
     bodyFat: null | number;
 }
 
+export type TEA = "0 per week" | "1-2 per week" | "3-4 per week" | "5-6 per week" | "7+ per week";
+export type goal = "static" | "maintain muscle" | "grow muscle";
+export type dietstyle = "Causal" | "High Carbs" | "Low Carbs";
+
 /**
  * target profile
  * @bmr Basal metabolic rate
  * @tdee Total Daily Energy Expenditure
  * @main_nutritunion 
  */
-export interface target{
+export type target = {
+    dietstyle: string;
     bmr: number,
     tdee: number,
     protein:{
@@ -39,6 +44,17 @@ export interface target{
     },
 }
 
+export type intakeReport = {
+    calorieSum: number,
+    caloriePer: number,
+    proteinSum: number,
+    proteinPer: number,
+    carbsSum: number,
+    carbsPer: number,
+    fatSum: number,
+    fatPer: number
+}
+
 /**
  * function to quantify the target of calorie intake as well as main nutrition for user
  * @param profile basic personal information
@@ -49,9 +65,9 @@ export interface target{
  */
 export function setTarget(
     profile:profile, 
-    TEA: "0 per week" | "1-2 per week" | "3-4 per week" | "5-6 per week" | "7+ per week", 
-    goal: "static" | "maintain muscle" | "grow muscle", 
-    dietstyle: "Causal" | "High Carbohydrates" | "Low Carbohydrates"):target{
+    TEA: TEA, 
+    goal: goal, 
+    dietstyle: dietstyle):target{
     
     //BMR
     let gFactor :number = 0;
@@ -114,10 +130,10 @@ export function setTarget(
         case "Causal":
             carbsPer = 0.5;
             break;
-        case "High Carbohydrates":
+        case "High Carbs":
             carbsPer = 0.65;
             break;
-        case "Low Carbohydrates":
+        case "Low Carbs":
             carbsPer = 0.15;
             break;
         default:
@@ -127,6 +143,7 @@ export function setTarget(
     fatPer = 1 - proteinPer - carbsPer;
 
     var target: target= {
+        dietstyle: dietstyle,
         bmr: bmr,
         tdee: tdee,
         protein:{
@@ -147,4 +164,32 @@ export function setTarget(
     }
 
     return target;
+}
+
+/**
+ * 
+ * @param profile 
+ * @param TEA 
+ * @param goal 
+ * @param dietstyle 
+ * @returns list of target
+ */
+export function listAllTarget(profile:profile, 
+    TEA: TEA, 
+    goal: goal,
+    dietstyle: dietstyle){
+        
+        var dietstyles: dietstyle[] = ["Causal", "High Carbs", "Low Carbs"];
+        var res: any[] = JSON.parse("[]");
+
+        res.push(setTarget(profile, TEA, goal, dietstyle));
+
+        for (var i in dietstyles) {
+            if(i != dietstyle){
+                var ds: dietstyle = dietstyles[i]
+                res.push(setTarget(profile, TEA, goal, ds));
+            }
+        }
+        
+        return res;
 }
