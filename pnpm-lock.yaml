@@ -89,6 +89,9 @@ dependencies:
   react-native-paper:
     specifier: ^5.11.1
     version: 5.11.1(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.2)(react-native@0.72.6)(react@18.2.0)
+  react-native-paper-dropdown:
+    specifier: ^1.0.7
+    version: 1.0.7(@types/react-native@0.72.6)(@types/react@18.2.37)(react-native-paper@5.11.1)(react-native@0.72.6)(react@18.2.0)(typescript@5.2.2)
   react-native-picker:
     specifier: ^4.3.7
     version: 4.3.7
@@ -2749,7 +2752,6 @@ packages:
 
   /@types/prop-types@15.7.10:
     resolution: {integrity: sha512-mxSnDQxPqsZxmeShFH+uwQ4kO4gcJcGahjjMFeLbKE95IAZiiZyiEepGZjtXJ7hN/yfu0bu9xN2ajcU0JcxX6A==}
-    dev: true
 
   /@types/qs@6.9.10:
     resolution: {integrity: sha512-3Gnx08Ns1sEoCrWssEgTSJs/rsT2vhGP+Ja9cnnk9k4ALxinORlQneLXFeFKOTJMOeZUFD1s7w+w2AphTpvzZw==}
@@ -2785,7 +2787,6 @@ packages:
       '@types/react': 18.2.37
     transitivePeerDependencies:
       - react-native
-    dev: true
 
   /@types/react-test-renderer@18.0.6:
     resolution: {integrity: sha512-O2JT1J3/v/NaYHYmPf2DXBSqUGmp6iwhFPicES6Pc1Y90B9Qgu99mmaBGqfZFpVuXLzF/pNJB4K9ySL3iqFeXA==}
@@ -2799,7 +2800,6 @@ packages:
       '@types/prop-types': 15.7.10
       '@types/scheduler': 0.16.6
       csstype: 3.1.2
-    dev: true
 
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
@@ -2813,7 +2813,6 @@ packages:
 
   /@types/scheduler@0.16.6:
     resolution: {integrity: sha512-Vlktnchmkylvc9SnwwwozTv04L/e1NykF5vgoQ0XTmI8DD+wxfjQuHuvHS3p0r2jz2x2ghPs2h1FVeDirIteWA==}
-    dev: true
 
   /@types/send@0.17.4:
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
@@ -4261,7 +4260,6 @@ packages:
 
   /csstype@3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
-    dev: true
 
   /dag-map@1.0.2:
     resolution: {integrity: sha512-+LSAiGFwQ9dRnRdOeaj7g47ZFJcOUPukAP8J3A3fuZ1g9Y44BG+P1sgApjLXTQPOzC4+7S9Wr8kXsfpINM4jpw==}
@@ -8329,6 +8327,24 @@ packages:
       react-native: 0.72.6(@babel/core@7.23.3)(@babel/preset-env@7.23.3)(react@18.2.0)
     dev: false
 
+  /react-native-paper-dropdown@1.0.7(@types/react-native@0.72.6)(@types/react@18.2.37)(react-native-paper@5.11.1)(react-native@0.72.6)(react@18.2.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-St0rZFw5sC7mbXtFCOGsyEa0fIBaG6Cfz78RsjFNzTj+rKd1i9qlDY2O7eOa2zAUEnFlL+C7FXdXUY9RUNELNw==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-native': '*'
+      react: '*'
+      react-native: '*'
+      react-native-paper: '*'
+      typescript: '*'
+    dependencies:
+      '@types/react': 18.2.37
+      '@types/react-native': 0.72.6(react-native@0.72.6)
+      react: 18.2.0
+      react-native: 0.72.6(@babel/core@7.23.3)(@babel/preset-env@7.23.3)(react@18.2.0)
+      react-native-paper: 5.11.1(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.2)(react-native@0.72.6)(react@18.2.0)
+      typescript: 5.2.2
+    dev: false
+
   /react-native-paper@5.11.1(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.2)(react-native@0.72.6)(react@18.2.0):
     resolution: {integrity: sha512-axqRTagGL8LtuYh172cx2Q2THOVJ3PTpPjCKhL5ECRdpJs2ceiboVecSiOIBuO3H7dVpaneptBA0vJr9HeVHwg==}
     peerDependencies:
@@ -9526,7 +9542,6 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /ua-parser-js@1.0.37:
     resolution: {integrity: sha512-bhTyI94tZofjo+Dn8SN6Zv8nBDvyXTymAdM3LDI/0IboIUwTu1rEhW7v2TfiVsoYWgkQ4kOVqnI8APUFbIQIFQ==}
