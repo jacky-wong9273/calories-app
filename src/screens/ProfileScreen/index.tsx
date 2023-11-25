@@ -47,11 +47,26 @@ import { proper, getUnit, getSource } from "../../utils";
 
 export type ProfileScreenProps = {
   initialTab: number;
+  route: { params: { userId?: string } };
 };
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({
+  initialTab,
+  route: {
+    params: { userId },
+  },
+}) => {
   // create styles
   const styles = createStyles();
   const { colors } = useTheme();
+
+  // isOwner
+  const isOwner = !userId;
+
+  // getData
+  // todo @chris
+  // if isOwner = true, fetch the profile of the current user
+  // else isOwner = false, fetch the profile of userId
+  // replace the demo data with dynamic data
 
   // constant tag colors
   const tagColors = ["#5047a7", "#33aa22", "#cc2233"];
@@ -74,7 +89,17 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
 
   // handle handlers for user background
   const handleBackgroundPress = () => {
-    /** todo */
+    //todo
+  };
+
+  // handle edit profile
+  const editProfile = () => {
+    //todo
+  };
+
+  // handle share profile
+  const shareProfile = () => {
+    //todo
   };
 
   // user profile card
@@ -125,15 +150,34 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
             </View>
           ))}
       </View>
-      <View style={styles.buttonRow}>
-        <Button style={styles.editButton}>
-          <Icon name="lead-pencil" size={15} style={{}} />
-          {"  Edit Profile  "}
-        </Button>
-        <Button style={styles.shareButton} rippleColor={"#22299d"}>
-          <Icon name="share-outline" size={20} style={{}} />
-        </Button>
-      </View>
+      {isOwner && (
+        <View style={styles.buttonRow}>
+          <Button style={styles.editButton}>
+            <Icon
+              name="lead-pencil"
+              size={15}
+              style={{}}
+              onPress={editProfile}
+            />
+            {"  Edit Profile  "}
+          </Button>
+
+          <Button style={styles.shareButton} onPress={shareProfile}>
+            <Icon name="share-outline" size={20} style={{}} />
+          </Button>
+        </View>
+      )}
+      {!isOwner && (
+        <View style={styles.buttonRow}>
+          <Button
+            style={{ width: "100%", alignContent: "center" }}
+            onPress={shareProfile}
+          >
+            {" Share   "}
+            <Icon name="share-outline" size={20} />
+          </Button>
+        </View>
+      )}
     </View>
   );
 

@@ -20,19 +20,21 @@ import { createStyles } from "./styles";
 // import demo data
 import { explore, explore2 } from "../../demo";
 
-const ExploreScreen = () => {
+interface ExploreScreenProps {
+  navigation: any;
+}
+const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   // create styles
   const styles = createStyles();
 
-  // handle handlers for user background
-  const handleBackgroundPress = () => {
-    /** todo */
-  };
+  // todo @chris
+  // load all profiles and replace demo data
 
   // user profile card
   type UserCardType = {
     imgSrc: ImageSourcePropType;
     name: string;
+    id?: string;
     bio?: string;
     joinTime: string;
     userTag: string;
@@ -41,12 +43,16 @@ const ExploreScreen = () => {
   const UserCard = ({
     imgSrc,
     name,
+    id,
     userTag,
     bio,
     joinTime,
     featureTags,
   }: UserCardType) => (
-    <View style={styles.userCard}>
+    <TouchableOpacity
+      style={styles.userCard}
+      onPress={() => navigation.navigate("Profile", { userId: "78g8" })}
+    >
       {/** user avatar */}
       <TouchableOpacity style={styles.avatarContainer}>
         <Avatar.Image source={imgSrc} size={100} style={{ zIndex: 10 }} />
@@ -76,7 +82,7 @@ const ExploreScreen = () => {
             </View>
           ))}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -96,6 +102,7 @@ const ExploreScreen = () => {
             {explore.map((user, index) => (
               <UserCard
                 key={index}
+                id={user?.id}
                 imgSrc={user.avatar}
                 name={user.name}
                 userTag={user.userTag}
@@ -109,6 +116,7 @@ const ExploreScreen = () => {
             {explore2.map((user, index) => (
               <UserCard
                 key={index}
+                id={user?.id}
                 imgSrc={user.avatar}
                 name={user.name}
                 userTag={user.userTag}

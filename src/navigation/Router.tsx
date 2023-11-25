@@ -7,6 +7,7 @@ import HomeTabNavigator from "./TabNavigator/HomeTabNavigator";
 import HomeScreen from "../screens/HomeScreen";
 import OnBoardScreen from "../screens/OnBoardScreen";
 import LoginScreen from "../screens/LoginScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 // import main stack creator
 import { createStackNavigator } from "@react-navigation/stack";
@@ -26,6 +27,13 @@ const MainStack = () => {
       <Stack.Screen
         name={"Login"}
         component={LoginScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={"Profile"}
+        component={ProfileScreen}
         options={{
           headerShown: false,
         }}
