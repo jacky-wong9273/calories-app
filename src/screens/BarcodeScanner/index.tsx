@@ -28,6 +28,7 @@ interface CalorieRecord {
   carbs_gram: number;
   fat_gram: number;
   photo: string;
+  input: string
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
@@ -141,7 +142,8 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       protein_gram: foodPro * portion,
       carbs_gram: foodCarbs * portion,
       fat_gram: foodFat * portion,
-      photo: ""
+      photo: "",
+      input: "Barcode Scanner"
     };
 
     Alert.alert("Saved to my history.");

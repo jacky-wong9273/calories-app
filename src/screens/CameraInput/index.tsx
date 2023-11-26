@@ -28,6 +28,7 @@ interface CalorieRecord {
   carbs_gram: number;
   fat_gram: number;
   photo: string;
+  input: string
 }
 
 const CameraInput: React.FC<CameraInputProps> = ({ setSelectedOption }) => {
@@ -87,14 +88,15 @@ const CameraInput: React.FC<CameraInputProps> = ({ setSelectedOption }) => {
       if (photo) {
         // Save the photo and data to the local database using Axios
         const newData: CalorieRecord = {
-          user_id: userId,
+          user_id: 1,
           record_date: date,
           food_item: name,
           cal_get: kcal,
           protein_gram: protein,
           carbs_gram: carb,
           fat_gram: fat,
-          photo: photo
+          photo: photo,
+          input: "Camera"
         };
 
         await axios.post(`${serverIP}/calorie/addrecord`, newData);

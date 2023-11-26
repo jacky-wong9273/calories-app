@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
 
 // import UI components
@@ -28,6 +28,7 @@ import {
 } from "react-native-tab-view";
 import { LineChart } from "react-native-chart-kit";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import axios, { Axios } from "axios";
 
 // import data processing utils
 import {
@@ -44,14 +45,44 @@ import { user, analytics, history } from "../../demo";
 
 // rget utils functions
 import { proper, getUnit, getSource } from "../../utils";
+import { useUserId } from "../..//context/userContext";
+import { serverIP } from "../../../serverConfig";
 
 export type ProfileScreenProps = {
   initialTab: number;
 };
+
+type historyCardFormat = {
+  date: Date;
+  intake: {
+    calories: number;
+    carbs?: number;
+    fat?: number;
+    protein?: number;
+  };
+  source: string;
+  itemName: string;
+  img?: string | null;
+};
+
+type databaseFormat = {
+  CALORIES: number;
+  CARBS_GRAM: number;
+  FAT_GRAM: number;
+  PROTEIN_GRAM: number;
+  RECORD_DATE: string;
+  PHOTO: string;
+  FOOD_ITEM: string;
+  INPUT: string;
+};
+
+
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
   // create styles
   const styles = createStyles();
   const { colors } = useTheme();
+  const userId = useUserId().userId;
+  const [tab, setTab] = useState<number>(initialTab ? initialTab : 0);
 
   // constant tag colors
   const tagColors = ["#5047a7", "#33aa22", "#cc2233"];
@@ -205,12 +236,14 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
       />
     </View>
   );
+
   // data card
   type DataCardProps = {
     title: string;
     value: number;
     percentage: number;
   };
+
   const DataCard = ({ title, value, percentage }: DataCardProps) => {
     return (
       <TouchableOpacity style={styles.dataCard}>
@@ -229,29 +262,83 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
     );
   };
 
+  const [records, setRecords] = useState<(historyCardFormat | null)[]>([]);
+
+  useEffect(() => {
+    if (tab === 1){
+      axios.get(serverIP + '/calorie/viewrecords',{
+        params: {
+            user_id: 1
+        },
+      }).then((response: any) => {
+          setRecords(convertJSONData(response.data))
+      }).catch((error:any) => {
+          console.log("Error fetching calorie history:", error);
+      });
+    }
+  }, [tab]);
+  
+
+  const convertJSONData = (jsonData: databaseFormat[]): historyCardFormat[] => {
+    return jsonData.map((data) => {
+      const {
+        CALORIES,
+        CARBS_GRAM,
+        FAT_GRAM,
+        PROTEIN_GRAM,
+        RECORD_DATE,
+        PHOTO,
+        INPUT,
+        FOOD_ITEM,
+      } = data;
+
+      if (CARBS_GRAM === 0 && FAT_GRAM === 0 && PROTEIN_GRAM === 0 && PHOTO === "") {
+        return null!; // Set the entry to null
+      }
+  
+      return {
+        date: new Date(RECORD_DATE),
+        intake: {
+          calories: CALORIES,
+          carbs: CARBS_GRAM,
+          fat: FAT_GRAM,
+          protein: PROTEIN_GRAM,
+        },
+        source: INPUT,
+        itemName: FOOD_ITEM,
+        img: PHOTO
+      };
+    });
+  };
+
+
   // history tab
   const HistoryTab = () => (
     <ScrollView style={styles.history}>
-      {history.map((datum, index) => (
-        <HistoryCard key={index} data={datum} />
+      {records
+      ?.filter((datum) => datum !== null)
+      .map((datum, index) => (
+        datum && <HistoryCard key={index} data={datum!} />
       ))}
     </ScrollView>
   );
 
   // history card
   type historyCardProps = {
-    data: {
-      date: Date;
-      intake: { calories: number; fat: number; protein: number };
-      source: number;
-      itemName: string;
-      img?: ImageSourcePropType;
-      location: string;
-    };
+    data: historyCardFormat | null;
   };
+  
   const HistoryCard = ({
-    data: { date, intake, source, itemName, img, location },
-  }: historyCardProps) => (
+    data,
+  }: historyCardProps) => {
+
+    if(!data) {
+      return null; 
+    }
+
+    const { date, intake, source, itemName, img } = data;
+
+    return(
     <TouchableOpacity style={styles.historyCard}>
       <View style={styles.historyDateContainer}>
         <Text style={styles.historyDate}>
@@ -261,16 +348,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
             year: "numeric",
           })}
         </Text>
-        <Text style={styles.historyDate}>Source: {getSource(source)}</Text>
+        <Text style={styles.historyDate}>Source: {source}</Text>
       </View>
 
       <View style={styles.historyItemTitle}>
         <Title>{itemName}</Title>
-        {location && <Caption>{location}</Caption>}
       </View>
       {img && (
         <TouchableOpacity style={styles.historyImageContainer}>
-          <Image style={styles.historyImage} source={img} resizeMode="center" />
+          <Image style={styles.historyImage} source={{ uri: img }} resizeMode="center" />
         </TouchableOpacity>
       )}
 
@@ -294,20 +380,19 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ initialTab }) => {
 
               <Text style={styles.historyCardBottomItemText}>
                 {"  "}
-                {intake[key]} {getUnit(key)}
+                {intake[key as keyof typeof intake]} {getUnit(key)}
               </Text>
             </View>
           </TouchableOpacity>
         ))}
       </View>
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>)
+  };
 
   // render tab view
-  const [tab, setTab] = useState<number>(initialTab ? initialTab : 0);
   const tabs = [
     { key: "summary", title: "Summary" },
-    { key: "history", title: "History" },
+    { key: "history", title: "History", onPress: () => setTab(1) },
   ];
   const renderTabBar = (props: any) => (
     <TabBar
