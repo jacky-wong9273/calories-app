@@ -7,12 +7,12 @@ import axios from "axios";
 // import uis
 import { View, TouchableOpacity, Image, ScrollView } from "react-native";
 import {
-  Title,
-  Caption,
-  Text,
-  Button,
-  TextInput,
-  HelperText,
+Title,
+Caption,
+Text,
+Button,
+TextInput,
+HelperText,
 } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
@@ -27,298 +27,369 @@ const Tab2Image = require("../../assets/OnBoardScreen/tab2.jpg");
 const Tab3Image = require("../../assets/OnBoardScreen/tab3.jpg");
 const Tab4Image = require("../../assets/OnBoardScreen/tab4.jpg");
 
-// import objective and gender list from utils
-import { objectives, genders } from "../../utils";
+// import lists from utils
+import { objectives, dietstyles, exerFrequencyWeeks, genders } from "../../utils";
+import { targetSetup, listAllTarget} from "../../calculation/calculation";
+
+import {UserIdProvider, useUserId} from "../../context/userContext";
 
 // props for onboarding screen
 interface OnBoardScreenProps {
-  navigation: any;
+navigation: any;
 }
 const OnBoardingScreen: React.FC<OnBoardScreenProps> = ({ navigation }) => {
-  // create styles and themes
-  const styles = createStyles();
+// create styles and themes
+const styles = createStyles();
 
-  // store states
-  const [tab, setTab] = useState<number>(1);
-  const { colors } = useTheme();
+// store states
+const [tab, setTab] = useState<number>(1);
+const { colors } = useTheme();
 
-  // handle change tab
-  const handleChangeTab = (value: 1 | -1) => {
+// handle change tab
+const handleChangeTab = (value: 1 | -1) => {
     setTab(tab + value);
-  };
+};
 
-  // get started
-  const signUp = async() => {
+const setTarget = async() => {
+    
+    let setup: targetSetup; setup = {
+        userid: useUserId().userId,
+        weight: weight || 0,
+        height: height || 0,
+        age: age || 0,
+        gender: gender || "Male",
+        bodyFat: bodyFat || 0,
+        TEA: exerFrequencyWeek || "Sedentary",
+        goal: objective || "On Diet",
+        dietstyle: dietstyle || "Causal"
+      };
+
     try{
-      const reponse = await axios.post(`${serverIP}/profile/login/signup`,{
-          username: username,
-          password: password
-    });
-      console.log('sign-up successful', reponse.data);
-    } catch(error:any){
-      console.error(error.response.data);
+        const response = await axios.post(`${serverIP}/target/update`,
+        listAllTarget(setup)
+        );
+        console.log("target has been set", response.data);
+    } catch(error: any){
+        console.error(error.response.data);
     }
+}
+// get started
+const signUp = async() => {
+    try{
+    const response = await axios.post(`${serverIP}/profile/login/signup`,{
+        username: username,
+        password: password
+    });
+
+    UserIdProvider(response.data.userid);
+
+    console.log('sign-up successful', response.data);
+    } catch(error:any){
+    console.error(error.response.data);
+    }
+    
     // ... then go to home page
     navigation.navigate("HomeTab");
-  };
+};
 
-  // skip on board
-  const skipOnBoard = () => {
+// skip on board
+const skipOnBoard = () => {
     navigation.navigate("Login");
-  };
+};
 
-  // for new user: goals setting
-  const [height, setHeight] = useState<number>();
-  const [weight, setWeight] = useState<number>();
-  const [gender, setGender] = useState<string>();
-  const [bodyFat, setBodyFat] = useState<number>();
-  const [objective, setObjective] = useState<string>();
+// for new user: goals setting
+const [height, setHeight] = useState<number>();
+const [weight, setWeight] = useState<number>();
+const [age, setAge] = useState<number>();
+const [gender, setGender] = useState<string>();
+const [bodyFat, setBodyFat] = useState<number>();
+const [objective, setObjective] = useState<string>();
+const [exerFrequencyWeek, setExerFrequencyWeek] = useState<string>();
+const [dietstyle, setDietstyle] = useState<string>();
 
-  // handle objective dropdown
-  const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+// handle dropdown: objectives, exerciseFre., dietstyle, gender
+const [isObjDropDownOpen, setIsObjDropDownOpen] = useState<boolean>(false);
+const [isExerDropDownOpen, setIsExerDropDownOpen] = useState<boolean>(false);
+const [isDietDropDownOpen, setIsDietDropDownOpen] = useState<boolean>(false);
+const [isGenderDropDownOpen, setIsGenderDropDownOpen] = useState<boolean>(false);
 
-  // handle gender dropdown
-  const [isDropDownOpen2, setIsDropDownOpen2] = useState<boolean>(false);
+// for new user: account creation
+const [username, setUsername] = useState<string>("");
+const [password, setPassword] = useState<string>("");
+const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+const [userNameTaken, setUserNameTaken] = useState<boolean>(false);
 
-  // for new user: account creation
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const [userNameTaken, setUserNameTaken] = useState<boolean>(false);
-
-  // handle form input
-  const validateUsername = (username: string) => {
+// handle form input
+const validateUsername = (username: string) => {
     if(serverMode === "online"){
-      axios.get(`${serverIP}/profile/login/check-username`,{
+    axios.get(`${serverIP}/profile/login/check-username`,{
         params:{
-          username: username
+        username: username
         }
-      }).then((response: any) => {
+    }).then((response: any) => {
         if(response.data && response.data.result){
-          // case for unduplicated username
+        // case for unduplicated username
         } else if(response.data && response.data.error){
-          setUserNameTaken(true);
+        setUserNameTaken(true);
         }
-      }).catch((error: any) => {
+    }).catch((error: any) => {
         //network error handling
-      })
+    })
     } else if (serverMode === "offline"){
         //offline mode
     }
-  };
+};
 
-  const tabs = [
+const tabs = [
     // tab 1
     <View style={styles.tab}>
-      <Text style={[styles.title, { alignSelf: "flex-start" }]}>
+    <Text style={[styles.title, { alignSelf: "flex-start" }]}>
         Welcome to Calories-app!
-      </Text>
-      <Text
+    </Text>
+    <Text
         style={[styles.caption, { alignSelf: "flex-start", textAlign: "left" }]}
-      >
+    >
         In this app, you can explore on intelligent diet and workout plans
         designed just for you.
-      </Text>
+    </Text>
     </View>,
     // tab 2
     <View style={styles.tab}>
-      <View style={styles.imageContainer}>
+    <View style={styles.imageContainer}>
         <Image
-          source={Tab1Image}
-          style={{ width: 400, height: 350, alignSelf: "center" }}
-          resizeMode="contain"
+        source={Tab1Image}
+        style={{ width: 400, height: 350, alignSelf: "center" }}
+        resizeMode="contain"
         />
-      </View>
-      <Text style={styles.caption}>
+    </View>
+    <Text style={styles.caption}>
         Explore workout plans and meal plans to reach your goals.
-      </Text>
+    </Text>
     </View>,
     // tab 3
     <View style={styles.tab}>
-      <View style={[styles.imageContainer, { flexDirection: "row" }]}>
+    <View style={[styles.imageContainer, { flexDirection: "row" }]}>
         <Image
-          source={Tab3Image}
-          style={{ width: 150, height: 350, alignSelf: "center" }}
-          resizeMode="contain"
+        source={Tab3Image}
+        style={{ width: 150, height: 350, alignSelf: "center" }}
+        resizeMode="contain"
         />
         <Image
-          source={Tab4Image}
-          style={{ width: 152.5, height: 350, alignSelf: "center" }}
-          resizeMode="contain"
+        source={Tab4Image}
+        style={{ width: 152.5, height: 350, alignSelf: "center" }}
+        resizeMode="contain"
         />
-      </View>
-      <Text style={styles.caption}>
+    </View>
+    <Text style={styles.caption}>
         Record your diets and track your goals simultaneously.
-      </Text>
+    </Text>
     </View>,
-    // tab 4
+    // tab 
     <View style={styles.tab}>
-      <View style={styles.imageContainer}>
+    <View style={styles.imageContainer}>
         <Image
-          source={Tab2Image}
-          style={{ width: 400, height: 350, alignSelf: "center" }}
-          resizeMode="contain"
+        source={Tab2Image}
+        style={{ width: 400, height: 350, alignSelf: "center" }}
+        resizeMode="contain"
         />
-      </View>
-      <Text style={styles.caption}>
+    </View>
+    <Text style={styles.caption}>
         Reach out the community where people share diet and workout plans.
-      </Text>
+    </Text>
     </View>,
-    // tab 5,
+    // tab 5, target setting
     <ScrollView style={styles.tab}>
-      <Title style={[styles.tabRow]}>Start with us today.</Title>
-      <View style={styles.tabRow}>
+    <Title style={[styles.tabRow]}>Start with us today - Set Target</Title>
+    <View style={styles.tabRow}>
         <DropDown
-          label="My Objective"
-          placeholder="click to select..."
-          visible={isDropDownOpen}
-          showDropDown={() => setIsDropDownOpen(true)}
-          onDismiss={() => setIsDropDownOpen(false)}
-          value={objective}
-          setValue={setObjective}
-          list={objectives}
+        label="My Objective"
+        placeholder="click to select..."
+        visible={isObjDropDownOpen}
+        showDropDown={() => setIsObjDropDownOpen(true)}
+        onDismiss={() => setIsObjDropDownOpen(false)}
+        value={objective}
+        setValue={setObjective}
+        list={objectives}
         />
-      </View>
-      <Title style={[styles.tabRow, { marginTop: 25 }]}>About yourself.</Title>
-      <View
-        style={[
-          styles.tabRow,
-          { flexDirection: "row", justifyContent: "space-between" },
-        ]}
-      >
-        <TextInput
-          keyboardType="numeric"
-          style={{ width: "45%" }}
-          label="Height (m)"
-          right={<TextInput.Icon icon="ruler" />}
-          // @ts-ignore
-          onChangeText={setHeight}
+    </View>
+    <View style={styles.tabRow}>
+        <DropDown
+        label="Exercise Frequency (per week)"
+        placeholder="click to select..."
+        visible={isExerDropDownOpen}
+        showDropDown={() => setIsExerDropDownOpen(true)}
+        onDismiss={() => setIsExerDropDownOpen(false)}
+        value={exerFrequencyWeek}
+        setValue={setExerFrequencyWeek}
+        list={exerFrequencyWeeks}
         />
-        <TextInput
-          keyboardType="numeric"
-          style={{ width: "45%" }}
-          label="Weight (kg)"
-          right={<TextInput.Icon icon="weight" />}
-          // @ts-ignore
-          onChangeText={setWeight}
+    </View>
+    <View style={styles.tabRow}>
+        <DropDown
+        label="Dietstyles"
+        placeholder="click to select..."
+        visible={isDietDropDownOpen}
+        showDropDown={() => setIsDietDropDownOpen(true)}
+        onDismiss={() => setIsDietDropDownOpen(false)}
+        value={dietstyle}
+        setValue={setDietstyle}
+        list={dietstyles}
         />
-      </View>
+    </View>
 
-      <View style={styles.tabRow}>
+    <Title style={[styles.tabRow, { marginTop: 25 }]}>About yourself.</Title>
+    <View style={styles.tabRow}>
         <DropDown
-          label="Gender"
-          placeholder="click to select..."
-          visible={isDropDownOpen2}
-          showDropDown={() => setIsDropDownOpen2(true)}
-          onDismiss={() => setIsDropDownOpen2(false)}
-          value={gender}
-          setValue={setGender}
-          list={genders}
+        label="Gender"
+        placeholder="click to select..."
+        visible={isGenderDropDownOpen}
+        showDropDown={() => setIsGenderDropDownOpen(true)}
+        onDismiss={() => setIsGenderDropDownOpen(false)}
+        value={gender}
+        setValue={setGender}
+        list={genders}
         />
-      </View>
-      <View style={styles.tabRow}>
+    </View>
+
+    <View
+        style={[
+        styles.tabRow,
+        { flexDirection: "row", justifyContent: "space-between" },
+        ]}
+    >
         <TextInput
-          keyboardType="numeric"
-          label="Body Fat (%)"
-          right={<TextInput.Icon icon="percent-outline" />}
-          // @ts-ignore
-          onChangeText={setBodyFat}
+        keyboardType="numeric"
+        style={{ width: "45%" }}
+        label="Height (m)"
+        right={<TextInput.Icon icon="ruler" />}
+        // @ts-ignore
+        onChangeText={setHeight}
         />
-      </View>
-      <View style={[styles.tabRow, { alignItems: "center" }]}>
+        <TextInput
+        keyboardType="numeric"
+        style={{ width: "45%" }}
+        label="Weight (kg)"
+        right={<TextInput.Icon icon="weight" />}
+        // @ts-ignore
+        onChangeText={setWeight}
+        />
+    </View>
+
+    <View
+        style={[
+        styles.tabRow,
+        { flexDirection: "row", justifyContent: "space-between" },
+        ]}
+    >
+        <TextInput
+        keyboardType="numeric"
+        label="Body Fat   "
+        right={<TextInput.Icon icon="percent-outline" />}
+        // @ts-ignore
+        onChangeText={setBodyFat}
+        />
+        <TextInput
+        keyboardType="numeric"
+        style={{ width: "45%" }}
+        label="Age"
+        // @ts-ignore
+        onChangeText={setAge}
+        />
+    </View>
+    <View style={[styles.tabRow, { alignItems: "center" }]}>
         <HelperText
-          type="error"
-          visible={!objective || !height || !weight || !gender || !bodyFat}
+        type="error"
+        visible={!objective || !height || !weight || !gender || !bodyFat}
         >
-          Complete all fields.
+        Complete all fields.
         </HelperText>
-      </View>
+    </View>
     </ScrollView>,
     // tab 6
     <View style={styles.tab}>
-      <Title style={[styles.tabRow, { marginBottom: 25 }]}>
+    <Title style={[styles.tabRow, { marginBottom: 25 }]}>
         Create your account.
-      </Title>
-      <View style={[styles.tabRow]}>
+    </Title>
+    <View style={[styles.tabRow]}>
         <TextInput
-          label="Username"
-          left={<TextInput.Icon icon="account" />}
-          onChangeText={(text: string) => {
+        label="Username"
+        left={<TextInput.Icon icon="account" />}
+        onChangeText={(text: string) => {
             setUsername(text);
             validateUsername(text);
-          }}
-          error={userNameTaken}
+        }}
+        error={userNameTaken}
         />
         <HelperText type="error" visible={userNameTaken}>
-          Username has already been taken.
+        Username has already been taken.
         </HelperText>
-      </View>
-      <View style={[styles.tabRow]}>
+    </View>
+    <View style={[styles.tabRow]}>
         <TextInput
-          label="Password"
-          left={
+        label="Password"
+        left={
             <TextInput.Icon
-              icon={passwordVisible ? "eye" : "eye-off"}
-              onPress={() => setPasswordVisible(!passwordVisible)}
+            icon={passwordVisible ? "eye" : "eye-off"}
+            onPress={() => setPasswordVisible(!passwordVisible)}
             />
-          }
-          secureTextEntry={!passwordVisible}
-          onChangeText={setPassword}
+        }
+        secureTextEntry={!passwordVisible}
+        onChangeText={setPassword}
         />
-      </View>
+    </View>
     </View>,
-  ];
-  const maxTab = tabs.length;
+];
+const maxTab = tabs.length;
 
-  return (
+return (
     <View style={styles.root}>
-      {/* tab content */}
-      <View style={styles.content}>{tabs[tab - 1]}</View>
+    {/* tab content */}
+    <View style={styles.content}>{tabs[tab - 1]}</View>
 
-      {/* button navigation */}
-      <View style={styles.bottomRow}>
+    {/* button navigation */}
+    <View style={styles.bottomRow}>
         {/* chevron left button */}
         <View style={styles.changeTabContainer}>
-          {tab > 1 && (
+        {tab > 1 && (
             <TouchableOpacity
-              style={styles.changeTab}
-              onPress={() => handleChangeTab(-1)}
+            style={styles.changeTab}
+            onPress={() => handleChangeTab(-1)}
             >
-              <Icon name="chevron-left" color={"#4d4d4d"} size={30} />
+            <Icon name="chevron-left" color={"#4d4d4d"} size={30} />
             </TouchableOpacity>
-          )}
+        )}
         </View>
 
         {/* getting started button */}
         <View style={styles.changeTabContainer}>
-          {tab == maxTab && (
+        {tab == maxTab && (
             <TouchableOpacity style={styles.getStarted} onPress={signUp}>
-              <Text>Sign up</Text>
+            <Text>Sign up</Text>
             </TouchableOpacity>
-          )}
+        )}
         </View>
 
         {/* chevron right button */}
         <View style={styles.changeTabContainer}>
-          {tab < maxTab &&
+        {tab < maxTab &&
             (!(tab == 5) ||
-              !(!objective || !height || !weight || !gender || !bodyFat)) && (
-              <TouchableOpacity
+            !(!objective || !exerFrequencyWeek || !dietstyle || !height || !weight || !gender || !bodyFat)) && (
+            <TouchableOpacity
                 style={styles.changeTab}
                 onPress={() => handleChangeTab(1)}
-              >
+            >
                 <Icon name="chevron-right" color={colors.primary} size={30} />
-              </TouchableOpacity>
+            </TouchableOpacity>
             )}
         </View>
-      </View>
-
-      {/* skip onboard screen */}
-      <TouchableOpacity style={styles.skip} onPress={skipOnBoard}>
-        <Text style={styles.skipText}>I have an account</Text>
-      </TouchableOpacity>
     </View>
-  );
+
+    {/* skip onboard screen */}
+    <TouchableOpacity style={styles.skip} onPress={skipOnBoard}>
+        <Text style={styles.skipText}>I have an account</Text>
+    </TouchableOpacity>
+    </View>
+);
 };
 
 export default OnBoardingScreen;
