@@ -50,12 +50,10 @@ const OnBoardingScreen: React.FC<OnBoardScreenProps> = ({ navigation }) => {
   // get started
   const signUp = async() => {
     try{
-      const reponse = await( axios.post(`${serverIP}/profile/login/signup`,{
-        params:{
-          username,
-          password
-        }
-    }));
+      const reponse = await axios.post(`${serverIP}/profile/login/signup`,{
+          username: username,
+          password: password
+    });
       console.log('sign-up successful', reponse.data);
     } catch(error:any){
       console.error(error.response.data);
