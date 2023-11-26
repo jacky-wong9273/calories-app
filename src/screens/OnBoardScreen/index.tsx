@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+// server connection
+import { serverIP, serverMode } from "../../../serverConfig";
+import axios from "axios";
+
 // import uis
 import { View, TouchableOpacity, Image, ScrollView } from "react-native";
 import {
@@ -44,9 +48,18 @@ const OnBoardingScreen: React.FC<OnBoardScreenProps> = ({ navigation }) => {
   };
 
   // get started
-  const signUp = () => {
-    // todo @chris
-    // ... complete signup logic
+  const signUp = async() => {
+    try{
+      const reponse = await( axios.post(`${serverIP}/profile/login/signup`,{
+        params:{
+          username,
+          password
+        }
+    }));
+      console.log('sign-up successful', reponse.data);
+    } catch(error:any){
+      console.error(error.response.data);
+    }
     // ... then go to home page
     navigation.navigate("HomeTab");
   };
@@ -77,8 +90,23 @@ const OnBoardingScreen: React.FC<OnBoardScreenProps> = ({ navigation }) => {
 
   // handle form input
   const validateUsername = (username: string) => {
-    // todo
-    // to check if username duplicated, if yes then set usernameTaken to true
+    if(serverMode === "online"){
+      axios.get(`${serverIP}/profile/login/check-username`,{
+        params:{
+          username: username
+        }
+      }).then((response: any) => {
+        if(response.data && response.data.result){
+          // case for unduplicated username
+        } else if(response.data && response.data.error){
+          setUserNameTaken(true);
+        }
+      }).catch((error: any) => {
+        //network error handling
+      })
+    } else if (serverMode === "offline"){
+        //offline mode
+    }
   };
 
   const tabs = [

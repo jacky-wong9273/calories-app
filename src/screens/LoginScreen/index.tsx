@@ -4,8 +4,12 @@ import { useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Title, TextInput, HelperText, Text } from "react-native-paper";
 
+// server connection
+import { serverIP, serverMode } from "../../../serverConfig";
+
 // import styles
 import { createStyles } from "./styles";
+import axios from "axios";
 
 // props for onboarding screen
 interface LoginScreenProps {
@@ -19,16 +23,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const [isPasswordIncorrect, setIsPasswordInccorect] =
+  const [isPasswordIncorrect, setIsPasswordIncorrect] =
     useState<boolean>(false);
 
   // handle sign in
-  const signIn = () => {
-    // todo @chris
-    // sign in with existing account
-    // if password is incorrect, setIsPasswordIncorrect = true
-    // then navigate to hometab
-    navigation.navigate("HomeTab");
+  const signIn = async () => {
+    try {
+      if (serverMode === "online") {
+        const response = await axios.get(`${serverIP}/profile/login/signin`, {
+          params: {
+            username: username,
+            password: password
+          }
+        });
+  
+        if (response.data && response.data.error) {
+          setIsPasswordIncorrect(true);
+        } else {
+          navigation.navigate("HomeTab");
+        }
+      } else if (serverMode === "offline") {
+        navigation.navigate("HomeTab");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
