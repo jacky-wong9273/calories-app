@@ -27,6 +27,7 @@ interface CalorieRecord {
   protein_gram: number;
   carbs_gram: number;
   fat_gram: number;
+  photo: string;
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
@@ -38,15 +39,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState("Not yet scanned");
   const [foodName, setFoodName] = useState("");
-  const [foodKcal, setFoodKcal] = useState(0);
-  const [foodCarbs, setFoodCarbs] = useState(0);
-  const [foodPro, setFoodPro] = useState(0);
-  const [foodFat, setFoodFat] = useState(0);
+  const [foodKcal, setFoodKcal] = useState<any>(0);
+  const [foodCarbs, setFoodCarbs] = useState<any>(0);
+  const [foodPro, setFoodPro] = useState<any>(0);
+  const [foodFat, setFoodFat] = useState<any>(0);
   const [hasData, setHasData] = useState(false);
   const [date, setDate] = useState("");
 
   const [confirmBarcode, setConfirmBarcode] = useState(false);
-  const [portion, setPortion] = useState(1);
+  const [portion, setPortion] = useState<any>(1);
 
   const askForCameraPermission = () => {
     (async () => {
@@ -140,19 +141,16 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
       protein_gram: foodPro * portion,
       carbs_gram: foodCarbs * portion,
       fat_gram: foodFat * portion,
+      photo: ""
     };
 
     Alert.alert("Saved to my history.");
 
-    setSelectedOption(null);
-
-    return;
 
     axios
       .post(`${serverIP}/calorie/addrecord`, newData)
       .then((response) => {
         console.log("Form data submitted successfully", response.data);
-
         setFoodName("");
         setDate("");
         setFoodKcal(0);
@@ -196,26 +194,36 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     );
   }
 
-  type datumRowProps = {
+  interface datumRowProps {
     title: string;
     value: string;
     caption?: string;
-    setValue: React.SetStateAction<string> | React.SetStateAction<number>;
+    setValue: React.Dispatch<React.SetStateAction<string | number>>;
+  }
+
+  const DatumRow = ({ title, value, setValue, caption }: datumRowProps) => {
+
+    const dynamicValue =
+      title === "Portion"
+        ? portion.toString()
+        : (value as unknown as number) * portion;
+
+    return (
+      <View style={styles.datumRow}>
+        <TouchableOpacity style={styles.datumRowDescription}>
+          <Text style={{ fontSize: 16 }}>{title}</Text>
+          {caption && <Caption>{caption}</Caption>}
+        </TouchableOpacity>
+        <View></View>
+        <TextInput
+          value={dynamicValue.toString()}
+          onChangeText={(text) => setValue(text)}
+          style={styles.input}
+          keyboardType="numeric"
+        ></TextInput>
+      </View>
+    )
   };
-  const DatumRow = ({ title, value, setValue, caption }: datumRowProps) => (
-    <View style={styles.datumRow}>
-      <TouchableOpacity style={styles.datumRowDescription}>
-        <Text style={{ fontSize: 16 }}>{title}</Text>
-        {caption && <Caption>{caption}</Caption>}
-      </TouchableOpacity>
-      <View></View>
-      <TextInput
-        value={value}
-        onChangeText={(text) => setValue(text)}
-        style={styles.input}
-      ></TextInput>
-    </View>
-  );
 
   if (hasPermission === true) {
     return (

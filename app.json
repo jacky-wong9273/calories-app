@@ -33,6 +33,9 @@
         {
           "cameraPermission": "Allow CalorieApp to access camera."
         }
+      ], 
+      [
+        "expo-image-picker"
       ]
     ]
   }

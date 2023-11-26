@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     borderRadius: 10,
-    width: 800,
+    width: '100%',
   },
   input: {
     height: 30,

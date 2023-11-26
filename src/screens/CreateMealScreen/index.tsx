@@ -5,6 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import DatePicker from "react-native-modern-datepicker";
 
 import BarcodeScanner from "../BarcodeScanner";
+import CameraInput from "../CameraInput";
 import { useUserId } from "../../context/userContext";
 import { serverIP } from "../../../serverConfig";
 import axios from "axios";
@@ -158,7 +159,12 @@ const CreateMealScreen: React.FC = () => {
           {!selectedOption && (
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                <Button style={styles.button}>Camera Input</Button>
+                <Button 
+                  style={styles.button}
+                  onPress={() => handleOptionSelect("camera")}
+                >
+                  Camera Input
+                </Button>
                 <Button
                   style={styles.button}
                   onPress={() => handleOptionSelect("barcode")}
@@ -178,6 +184,9 @@ const CreateMealScreen: React.FC = () => {
       )}
 
       {/* Conditionally render BarcodeScanner or Form based on the selected option */}
+      {selectedOption === "camera" && (
+        <CameraInput setSelectedOption={setSelectedOption} />
+      )}
       {selectedOption === "barcode" && (
         <BarcodeScanner setSelectedOption={setSelectedOption} />
       )}
