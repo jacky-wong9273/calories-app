@@ -125,6 +125,8 @@ const CreateMealScreen: React.FC = () => {
       protein_gram: selectedProt,
       carbs_gram: selectedCarb,
       fat_gram: selectedFat,
+      photo: "",
+      input: "Manual"
     };
 
     console.log(formData);

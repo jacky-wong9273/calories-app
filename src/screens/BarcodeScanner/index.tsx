@@ -135,7 +135,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
 
   const handleSave = () => {
     const newData: CalorieRecord = {
-      user_id: userId,
+      user_id: 1,
       record_date: date,
       food_item: foodName,
       cal_get: foodKcal * portion,
