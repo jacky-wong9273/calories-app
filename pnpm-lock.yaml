@@ -78,7 +78,7 @@ dependencies:
     specifier: ^2.20.0
     version: 2.20.0(react-native@0.72.6)
   react-native-gesture-handler:
-    specifier: ~2.12.0
+    specifier: ~2.12.1
     version: 2.12.1(react-native@0.72.6)(react@18.2.0)
   react-native-modern-datepicker:
     specifier: 1.0.0-beta.91
