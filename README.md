@@ -1,4 +1,5 @@
 # calories-app
+This project aims to help user to closely monitor their daily nutrients intake, in particular calories.
 
 ### Prerequisite
 
@@ -6,7 +7,7 @@
 - pnpm version ^8.\*
   You may download the prerequisites by following the document at https://pnpm.io/installation.
 
-### Development
+### Development / Preview
 
 Before starting to develop the app from every git pull, run `pnpm install` to ensure required dependencies are installed.
 Use `pnpm add --save-dev` for development-only dependencies during development to optimize production build.
