@@ -24,3 +24,9 @@ Run `pnpm start` to start the local server.
 2. Using a Physical Device / Simulator
 
 - Make sure a physical device is connected with physical cable / a simulator is active to be called.
+
+### Server
+
+https://github.com/ycclau-107/calories-app-server/
+
+Please read the README file of the server for the server operation.
