@@ -1,5 +1,4 @@
 # calories-app
-This mobile application project aims to help user to closely monitor their daily nutrients intake, in particular calories.
 
 ### Prerequisite
 
