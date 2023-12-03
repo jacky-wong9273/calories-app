@@ -1,5 +1,5 @@
 # calories-app
-This project aims to help user to closely monitor their daily nutrients intake, in particular calories.
+This mobile application project aims to help user to closely monitor their daily nutrients intake, in particular calories.
 
 ### Prerequisite
 
