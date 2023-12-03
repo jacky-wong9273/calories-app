@@ -1,21 +1,16 @@
+import {objectives, dietstyles, exerFrequencyWeeks, genders} from "../utils";
 
-export interface profile{
-    id: number;
-    name: string;
-    //weight of user in kg
+export type targetSetup = {
+    userid: number;
     weight: number;
-    //height of user in cm
     height: number;
-    //age of user in years
     age: number;
-    gender: "Male"| "Female";
-    
+    gender: typeof genders[number]['value'];
     bodyFat: null | number;
+    TEA: typeof exerFrequencyWeeks[number]['value'];
+    goal: typeof objectives[number]['value'];
+    dietstyle: typeof dietstyles[number]['value'];
 }
-
-export type TEA = "0 per week" | "1-2 per week" | "3-4 per week" | "5-6 per week" | "7+ per week";
-export type goal = "static" | "maintain muscle" | "grow muscle";
-export type dietstyle = "Causal" | "High Carbs" | "Low Carbs";
 
 /**
  * target profile
@@ -64,69 +59,67 @@ export type intakeReport = {
  * @returns {target} target quantified diet profile
  */
 export function setTarget(
-    profile:profile, 
-    TEA: TEA, 
-    goal: goal, 
-    dietstyle: dietstyle):target{
+    setup: targetSetup):target{
     
     //BMR
     let gFactor :number = 0;
-    if(profile.gender == "Male"){
+    if(setup.gender == "Male"){
         gFactor = 5;
-    } else if (profile.gender == "Female"){
+    } else if (setup.gender == "Female"){
         gFactor = -16;
+    } else if (setup.gender == "Others"){
+        gFactor = 0;
     }
 
-    var bmr: number = (profile.weight*10) + (profile.height*6.25) - (profile.age*5) + gFactor;
-
+    var bmr: number = (setup.weight*10) + (setup.height*6.25) - (setup.age*5) + gFactor;
+    var eFactor: number = 0;
     //TDEE
-    var tFactor: number = 0;
-    switch(TEA){
-        case "0 per week":
-            tFactor = 1.2;
+    switch(setup.TEA){
+        case "Sedentary":
+            pFactor = 1.2;
             break;
-        case "1-2 per week":
-            tFactor = 1.375;
+        case "1-3 times":
+            pFactor = 1.375;
             break;
-        case "3-4 per week":
-            tFactor = 1.55;
+        case "4-5 times":
+            pFactor = 1.6;
             break;
-        case "5-6 per week":
-            tFactor = 1.725;
-            break;
-        case "7+ per week":
-            tFactor = 1.9;
+        case "Daily":
+            eFactor = 1.9;
             break;
         default:
-            tFactor = 1;
             break;
     }
-    var tdee: number = bmr * tFactor;
+    var tdee: number = bmr * eFactor;
 
     //protein Intake
     var proteinIntake_gram: number = 0;
     var pFactor:number = 0;
-    switch(goal){
-        case "static":
+    switch(setup.goal){
+        case "Keep Fit":
             pFactor = 1;
             break;
-        case "maintain muscle":
+        case "Semi-Bulk":
             pFactor = 1.2;
             break;
-        case "grow muscle":
+        case "Bulk":
             pFactor = 1.5;
             break;
         default:
             break;
     }
+    if(setup.goal === "On Diet"){
+        tdee -= 500;
+        pFactor = 1.2
+    }
 
-    proteinIntake_gram = profile.weight * pFactor;
+    proteinIntake_gram = setup.weight * pFactor;
 
     var proteinPer:number = proteinIntake_gram * 4/tdee;
     var carbsPer: number = 0;
     var fatPer: number = 0;
 
-    switch(dietstyle){
+    switch(setup.dietstyle){
         case "Causal":
             carbsPer = 0.5;
             break;
@@ -143,7 +136,7 @@ export function setTarget(
     fatPer = 1 - proteinPer - carbsPer;
 
     var target: target= {
-        dietstyle: dietstyle,
+        dietstyle: setup.dietstyle,
         bmr: bmr,
         tdee: tdee,
         protein:{
@@ -174,20 +167,17 @@ export function setTarget(
  * @param dietstyle 
  * @returns list of target
  */
-export function listAllTarget(profile:profile, 
-    TEA: TEA, 
-    goal: goal,
-    dietstyle: dietstyle){
-        
-        var dietstyles: dietstyle[] = ["Causal", "High Carbs", "Low Carbs"];
+export function listAllTarget(setup: targetSetup){
+        const dietstyleValues = dietstyles.map((item) => item.value);
         var res: any[] = JSON.parse("[]");
 
-        res.push(setTarget(profile, TEA, goal, dietstyle));
+        res.push(setTarget(setup));
 
-        for (var i in dietstyles) {
-            if(i != dietstyle){
-                var ds: dietstyle = dietstyles[i]
-                res.push(setTarget(profile, TEA, goal, ds));
+        for (var i in dietstyleValues) {
+            if(i != setup.dietstyle){
+                var ds = dietstyleValues[i]
+                setup.dietstyle = ds
+                res.push(setTarget(setup));
             }
         }
         
